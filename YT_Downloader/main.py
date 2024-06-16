@@ -17,8 +17,8 @@ def list_playlists(downloads_dir='downloads'):
         print("Available playlists:")
         for i, playlist in enumerate(playlists):
             print(f"{i}. {playlist}")
-        No = input("Choose No: ")
-        return playlists[No]
+        
+        return playlists
     except Exception as e:
         print(f'An error occurred: {e}')
         return []
@@ -32,6 +32,8 @@ def main():
     resolution = input("Enter the resolution (360p, 720p, 1080p): ").strip()
     if url == 'p':
         playlist_title = list_playlists()
+        output_dir = os.path.join('downloads', playlist_title)
+        url_file = os.path.join(output_dir, 'video_urls.txt')
         url_file, output_dir, video_urls = get_video_urls_from_playlist(playlist_title , refetch=False)
     
     if is_playlist(url):
