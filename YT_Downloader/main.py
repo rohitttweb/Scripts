@@ -16,7 +16,8 @@ def list_playlists(downloads_dir='downloads'):
         print("Available playlists:")
         for i, playlist in enumerate(playlists):
             print(f"{i}. {playlist}")
-        return playlists
+        playlist = input("choose playlist No: ")
+        return playlist
     except Exception as e:
         print(f'An error occurred: {e}')
         return []
@@ -26,16 +27,18 @@ def download_single_video(video_url, resolution):
     download_youtube_video(video_url, resolution, output_path)
 
 def main():
-    url = input("Enter the YouTube URL (video or playlist): ").strip()
+    url = input("Enter the YouTube URL (video or playlist): Or p for choosing Existing playlist ").strip()
     resolution = input("Enter the resolution (360p, 720p, 1080p): ").strip()
-
+    if url == 'p':
+        list_playlists()
+    
     if is_playlist(url):
         playlist_title = sanitize_filename(Playlist(url).title)
         output_dir = os.path.join('downloads', playlist_title)
         url_file = os.path.join(output_dir, 'video_urls.txt')
 
         if os.path.exists(output_dir):
-            refetch = input(f"Playlist '{playlist_title}' already exists. Do you want to refetch the URLs? (yes/no): ").strip().lower()
+            refetch = input(f"Playlist '{playlist_title}' already exists. Do you want to refetch the URLs? (yes/No): ").strip().lower()
             if refetch == 'yes':
                 url_file, output_dir, video_urls = get_video_urls_from_playlist(url, refetch=True)
             else:

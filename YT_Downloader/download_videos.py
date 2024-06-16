@@ -31,9 +31,9 @@ def download_youtube_video(video_url, resolution, output_path='.'):
         if os.path.exists(filepath):
             print(f"{filename} already exists. Skipping download.")
             return
-        
-        print(f'Downloading {yt.title} at {stream.resolution} resolution...')
+        print(f'Downloading.... {filename}.')
         stream.download(output_path, filename=filename)
+        
         print('Download completed successfully.')
 
     except Exception as e:
@@ -58,3 +58,4 @@ if __name__ == "__main__":
     resolution = input("Enter the resolution (360p, 720p, 1080p): ")
     output_path = os.path.dirname(file_path)
     download_videos_from_file(file_path, start_index, end_index, resolution, output_path)
+    

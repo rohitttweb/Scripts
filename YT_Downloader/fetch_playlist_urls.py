@@ -19,10 +19,11 @@ def get_video_urls_from_playlist(playlist_url, refetch=False):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         
-        video_urls = [video_url for video_url in playlist.video_urls]
+        video_urls = playlist.video_urls
         output_file = os.path.join(output_dir, 'video_urls.txt')
         
         with open(output_file, 'w') as f:
+            f.write(f"{playlist_url}\n")
             for url in video_urls:
                 f.write(f"{url}\n")
         

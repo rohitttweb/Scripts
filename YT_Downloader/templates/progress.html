@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Progress</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Download Progress</h1>
+        <p>Downloading {{ download_type }} at {{ resolution }} resolution.</p>
+        <p>Please check the terminal for detailed progress.</p>
+    </div>
+</body>
+</html>
