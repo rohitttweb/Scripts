@@ -47,7 +47,7 @@ def get_video_size(yt, resolution):
         return stream.filesize / (1024 * 1024)  # Convert bytes to megabytes
     else:
         # If specified resolution is not found, get the highest resolution available
-        highest_res_stream = yt.streams.filter(progressive=True, file_extension='mp4').first()
+        highest_res_stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
         if highest_res_stream:
             return highest_res_stream.filesize / (1024 * 1024)
         else:
@@ -70,8 +70,8 @@ def get_playlist_video_info(playlist_url, resolution='720p'):
         if size_mb_specific > 0:
             total_size_bytes_specific += size_mb_specific * (1024 * 1024)  # Convert MB back to bytes for total calculation
         
-        # Calculate size for all streams (highest available resolution)
-        highest_res_stream = yt.streams.filter(progressive=True, file_extension='mp4').first()
+        # Calculate size for the highest resolution stream available
+        highest_res_stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
         if highest_res_stream:
             total_size_bytes_all += highest_res_stream.filesize
         
@@ -100,5 +100,5 @@ def get_playlist_video_info(playlist_url, resolution='720p'):
 # Example usage:
 if __name__ == "__main__":
     playlist_url = input("Enter the YouTube playlist URL: ")
-    resolution = input("Enter the resolution (e.g., 720p, 1080p): ")
+    resolution = input("Enter the resolution (e.g. 360p, 720p): ")
     get_playlist_video_info(playlist_url, resolution)

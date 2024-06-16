@@ -1,65 +1,17 @@
+# main.py
 import os
-from pytube import YouTube
+from pytube import Playlist
+from fetch_playlist_urls import get_video_urls_from_playlist
+from download_videos import download_youtube_video, download_videos_from_file
 
 def sanitize_filename(name):
-    allowed_chars = "._"  # Allow dots and underscores in addition to alphanumerics and spaces
-    return "".join(c for c in name if c.isalnum() or c in allowed_chars or c == ' ').rstrip()
+    return "".join(c for c in name if c.isalnum() or c in (' ', '_')).rstrip()
 
-def get_stream_by_resolution(yt, resolution):
-    streams = yt.streams.filter(progressive=True, file_extension='mp4', res=resolution)
-    if streams:
-        return streams.first()
-    else:
-        print(f"No stream found for resolution {resolution}.")
-        return None
-
-def download_youtube_video(video_url, resolution, output_path='.'):
-    try:
-        # Create the output directory if it doesn't exist
-        if not os.path.exists(output_path):
-            os.makedirs(output_path)
-        
-        # Create a YouTube object with the provided URL
-        yt = YouTube(video_url)
-        stream = get_stream_by_resolution(yt, resolution)
-        
-        if stream is None:
-            return
-        
-        # Determine the expected filename with resolution
-        filename = sanitize_filename(f"{yt.title} ({stream.resolution}).{stream.subtype}")
-        filepath = os.path.join(output_path, filename)
-        
-        # Check if the file already exists
-        if os.path.exists(filepath):
-            print(f"{filename} already exists. Skipping download.")
-            return
-        
-        # Download the chosen stream
-        print(f'Downloading {yt.title} at {stream.resolution} resolution...')
-        stream.download(output_path, filename=filename)
-        print('Download completed successfully.')
-        
-    except Exception as e:
-        print(f'An error occurred: {e}')
-
-def download_videos_from_file(file_path, start_index, end_index, resolution, output_path='.'):
-    try:
-        with open(file_path, 'r') as f:
-            video_urls = f.readlines()
-        
-        # Download the specified range of videos
-        for i in range(start_index, end_index + 1):
-            video_url = video_urls[i].strip()
-            print(video_url)
-            download_youtube_video(video_url, resolution, output_path)
-            
-    except Exception as e:
-        print(f'An error occurred: {e}')
+def is_playlist(url):
+    return 'playlist' in url
 
 def list_playlists(downloads_dir='downloads'):
     try:
-        # List all directories in the downloads folder
         playlists = [d for d in os.listdir(downloads_dir) if os.path.isdir(os.path.join(downloads_dir, d))]
         print("Available playlists:")
         for i, playlist in enumerate(playlists):
@@ -69,19 +21,34 @@ def list_playlists(downloads_dir='downloads'):
         print(f'An error occurred: {e}')
         return []
 
-# Example usage
-downloads_dir = 'downloads'  # Directory where playlists are stored
-playlists = list_playlists(downloads_dir)
+def download_single_video(video_url, resolution):
+    output_path = 'downloads'
+    download_youtube_video(video_url, resolution, output_path)
 
-if playlists:
-    playlist_index = int(input("Enter the number of the playlist you want to download from: "))
-    chosen_playlist = playlists[playlist_index]
-    file_path = os.path.join(downloads_dir, chosen_playlist, 'video_urls.txt')
-    
-    start_index = int(input("Enter the starting index (0-based) of the videos to download: "))
-    end_index = int(input("Enter the ending index (0-based) of the videos to download: "))
-    resolution = input("Enter the resolution (360p, 720p, 1080p): ")
-    output_path = os.path.join(downloads_dir, chosen_playlist)  # Use the same directory as the URLs file
-    download_videos_from_file(file_path, start_index, end_index, resolution, output_path)
-else:
-    print("No playlists found in the downloads directory.")
+def main():
+    url = input("Enter the YouTube URL (video or playlist): ").strip()
+    resolution = input("Enter the resolution (360p, 720p, 1080p): ").strip()
+
+    if is_playlist(url):
+        playlist_title = sanitize_filename(Playlist(url).title)
+        output_dir = os.path.join('downloads', playlist_title)
+        url_file = os.path.join(output_dir, 'video_urls.txt')
+
+        if os.path.exists(output_dir):
+            refetch = input(f"Playlist '{playlist_title}' already exists. Do you want to refetch the URLs? (yes/no): ").strip().lower()
+            if refetch == 'yes':
+                url_file, output_dir, video_urls = get_video_urls_from_playlist(url, refetch=True)
+            else:
+                print(f"Using existing URLs from {url_file}.")
+        else:
+            url_file, output_dir, video_urls = get_video_urls_from_playlist(url, refetch=False)
+
+        if url_file:
+            start_index = int(input("Enter the starting index (0-based) of the videos to download: "))
+            end_index = int(input("Enter the ending index (0-based) of the videos to download: "))
+            download_videos_from_file(url_file, start_index, end_index, resolution, output_dir)
+    else:
+        download_single_video(url, resolution)
+
+if __name__ == "__main__":
+    main()
