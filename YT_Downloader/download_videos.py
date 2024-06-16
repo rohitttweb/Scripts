@@ -45,7 +45,7 @@ def download_videos_from_file(file_path, start_index, end_index, resolution, out
             video_urls = f.readlines()
         
         for i in range(start_index, end_index + 1):
-            video_url = video_urls[i].strip()
+            video_url = video_urls[i + 1].strip()
             download_youtube_video(video_url, resolution, output_path)
 
     except Exception as e:

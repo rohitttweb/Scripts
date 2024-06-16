@@ -14,7 +14,14 @@ def get_video_urls_from_playlist(playlist_url, refetch=False):
         if os.path.exists(output_dir) and not refetch:
             print(f"Playlist '{playlist_title}' already exists in the downloads folder.")
             output_file = os.path.join(output_dir, 'video_urls.txt')
-            return output_file, output_dir, playlist.video_urls
+            try:
+                with open(output_file, 'r') as f:
+                    video_urls = f.readlines()
+                        
+            except Exception as e:
+                print(f'An error occurred: {e}')
+
+            return output_file, output_dir, video_urls
 
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
