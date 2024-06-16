@@ -30,7 +30,8 @@ def main():
     url = input("Enter the YouTube URL (video or playlist): Or p for choosing Existing playlist ").strip()
     resolution = input("Enter the resolution (360p, 720p, 1080p): ").strip()
     if url == 'p':
-        list_playlists()
+        playlist_no = list_playlists()
+        get_video_urls_from_playlist()
     
     if is_playlist(url):
         playlist_title = sanitize_filename(Playlist(url).title)
