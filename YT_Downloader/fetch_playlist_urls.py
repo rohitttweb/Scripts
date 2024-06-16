@@ -5,10 +5,14 @@ import os
 def sanitize_filename(name):
     return "".join(c for c in name if c.isalnum() or c in (' ', '_')).rstrip()
 
-def get_video_urls_from_playlist(playlist_url, refetch=False):
+def get_video_urls_from_playlist(playlist_url='', url_file_path='', refetch=False):
     try:
-        playlist = Playlist(playlist_url)
-        playlist_title = sanitize_filename(playlist.title)
+        if playlist_url:
+            playlist = Playlist(playlist_url)
+            playlist_title = sanitize_filename(playlist.title)
+        if url_file_path:      
+            playlist_title = url_file_path
+
         output_dir = os.path.join('downloads', playlist_title)
 
         if os.path.exists(output_dir) and not refetch:

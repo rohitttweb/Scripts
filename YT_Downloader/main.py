@@ -10,14 +10,15 @@ def sanitize_filename(name):
 def is_playlist(url):
     return 'playlist' in url
 
+
 def list_playlists(downloads_dir='downloads'):
     try:
         playlists = [d for d in os.listdir(downloads_dir) if os.path.isdir(os.path.join(downloads_dir, d))]
         print("Available playlists:")
         for i, playlist in enumerate(playlists):
             print(f"{i}. {playlist}")
-        playlist = input("choose playlist No: ")
-        return playlist
+        No = input("Choose No: ")
+        return playlists[No]
     except Exception as e:
         print(f'An error occurred: {e}')
         return []
@@ -30,8 +31,8 @@ def main():
     url = input("Enter the YouTube URL (video or playlist): Or p for choosing Existing playlist ").strip()
     resolution = input("Enter the resolution (360p, 720p, 1080p): ").strip()
     if url == 'p':
-        playlist_no = list_playlists()
-        get_video_urls_from_playlist()
+        playlist_title = list_playlists()
+        url_file, output_dir, video_urls = get_video_urls_from_playlist(playlist_title , refetch=False)
     
     if is_playlist(url):
         playlist_title = sanitize_filename(Playlist(url).title)
