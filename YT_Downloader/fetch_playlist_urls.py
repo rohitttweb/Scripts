@@ -5,13 +5,13 @@ import os
 def sanitize_filename(name):
     return "".join(c for c in name if c.isalnum() or c in (' ', '_')).rstrip()
 
-def get_video_urls_from_playlist(playlist_url='', url_file_path='', refetch=False):
+def get_video_urls_from_playlist(playlist_url='', playlist_name='', refetch=False):
     try:
         if playlist_url:
             playlist = Playlist(playlist_url)
             playlist_title = sanitize_filename(playlist.title)
-        if url_file_path:      
-            playlist_title = url_file_path
+        if playlist_name:      
+            playlist_title = playlist_name
 
         output_dir = os.path.join('downloads', playlist_title)
 

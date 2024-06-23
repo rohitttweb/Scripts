@@ -30,25 +30,27 @@ def download_single_video(video_url, resolution):
 def main():
     url = input("Enter the YouTube URL (video or playlist): Or p for choosing Existing playlist ").strip()
     resolution = input("Enter the resolution (360p, 720p, 1080p): ").strip()
-    if url == 'p':
-        playlist_title = list_playlists()
-        output_dir = os.path.join('downloads', playlist_title)
-        url_file = os.path.join(output_dir, 'video_urls.txt')
-        url_file, output_dir, video_urls = get_video_urls_from_playlist(playlist_title , refetch=False)
     
-    if is_playlist(url):
-        playlist_title = sanitize_filename(Playlist(url).title)
-        output_dir = os.path.join('downloads', playlist_title)
-        url_file = os.path.join(output_dir, 'video_urls.txt')
+    if is_playlist(url) or url =='p':
+        if url == 'p':
+            playlists = list_playlists()
+            playlist_index = int(input("Enter the number of the playlist you want to download from: "))
+            chosen_playlist = playlists[playlist_index]
 
-        if os.path.exists(output_dir):
-            refetch = input(f"Playlist '{playlist_title}' already exists. Do you want to refetch the URLs? (yes/No): ").strip().lower()
-            if refetch == 'yes':
-                url_file, output_dir, video_urls = get_video_urls_from_playlist(url, refetch=True)
-            else:
-                print(f"Using existing URLs from {url_file}.")
+            url_file, output_dir, video_urls = get_video_urls_from_playlist(playlist_name=chosen_playlist , refetch=False)
         else:
-            url_file, output_dir, video_urls = get_video_urls_from_playlist(url, refetch=False)
+            playlist_title = sanitize_filename(Playlist(url).title)
+            output_dir = os.path.join('downloads', playlist_title)
+            url_file = os.path.join(output_dir, 'video_urls.txt')
+
+            if os.path.exists(output_dir):
+                refetch = input(f"Playlist '{playlist_title}' already exists. Do you want to refetch the URLs? (yes/No): ").strip().lower()
+                if refetch == 'yes':
+                    url_file, output_dir, video_urls = get_video_urls_from_playlist(url, refetch=True)
+                else:
+                    print(f"Using existing URLs from {url_file}.")
+            else:
+                url_file, output_dir, video_urls = get_video_urls_from_playlist(url, refetch=False)
 
         if url_file:
             start_index = int(input("Enter the starting index (0-based) of the videos to download: "))

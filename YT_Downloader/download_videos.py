@@ -12,7 +12,7 @@ def get_stream_by_resolution(yt, resolution):
         return streams.first()
     else:
         print(f"No stream found for resolution {resolution}.")
-        return None
+        return None 
 
 def download_youtube_video(video_url, resolution, output_path='.'):
     try:
