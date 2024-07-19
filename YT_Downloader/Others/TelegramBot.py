@@ -4,7 +4,7 @@ import json
 import pytube
 import os
 
-base_url = 'https://api.telegram.org/bot7415657148:AAFkEcJgsc1O6DIAAK3AiMMjE4mqThIupbA'
+base_url = 'Your Bot Url'
 downloads_folder = os.path.join('.', "Downloads")
 if not os.path.exists(downloads_folder):
     os.makedirs(downloads_folder)
